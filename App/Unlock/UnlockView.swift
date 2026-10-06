@@ -30,8 +30,10 @@ struct UnlockView: View {
               .textFieldStyle(.roundedBorder).accessibilityIdentifier("confirmPassword")
               .onSubmit(submit)
             StrengthMeter(password: password)
-            Text("Mínimo de \(Vault.minimumPasswordLength) caracteres. Não há recuperação: se esquecer a senha mestra, os dados são irrecuperáveis.")
-              .font(.footnote).foregroundStyle(.secondary)
+            Text(
+              "Mínimo de \(Vault.minimumPasswordLength) caracteres. Não há recuperação: se esquecer a senha mestra, os dados são irrecuperáveis."
+            )
+            .font(.footnote).foregroundStyle(.secondary)
           }
         }
         .textInputAutocapitalization(.never).autocorrectionDisabled()
@@ -118,8 +120,10 @@ struct StrengthMeter: View {
     VStack(alignment: .leading, spacing: 4) {
       HStack(spacing: 4) {
         ForEach(0..<5) { index in
-          Capsule().fill(index <= result.level.rawValue && !password.isEmpty ? color : Color.secondary.opacity(0.25))
-            .frame(height: 6)
+          Capsule().fill(
+            index <= result.level.rawValue && !password.isEmpty ? color : Color.secondary.opacity(0.25)
+          )
+          .frame(height: 6)
         }
       }
       Text(password.isEmpty ? " " : "Força: \(title) (~\(Int(result.bits)) bits)")

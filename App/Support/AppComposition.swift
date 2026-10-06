@@ -12,7 +12,8 @@ enum AppComposition {
   }
 
   static func make() -> Result {
-    var directory = URL.applicationSupportDirectory.appending(path: "SecureVault", directoryHint: .isDirectory)
+    var directory = URL.applicationSupportDirectory.appending(
+      path: "SecureVault", directoryHint: .isDirectory)
     var iterations = PBKDF2.defaultIterations
     var defaults = UserDefaults.standard
     var showShield = false
@@ -20,7 +21,8 @@ enum AppComposition {
       // UI-test hooks. Compiled out of Release builds, so production can never run with a weak KDF.
       let arguments = ProcessInfo.processInfo.arguments
       if arguments.contains("-UITestReset") || arguments.contains("-UITestSeed") {
-        directory = FileManager.default.temporaryDirectory.appending(path: "securevault-ui-\(UUID().uuidString)")
+        directory = FileManager.default.temporaryDirectory.appending(
+          path: "securevault-ui-\(UUID().uuidString)")
         iterations = 1_000
         defaults = UserDefaults(suiteName: "securevault-ui-\(UUID().uuidString)") ?? .standard
       }

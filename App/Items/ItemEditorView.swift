@@ -46,13 +46,16 @@ struct ItemEditorView: View {
 
   @ViewBuilder private var passwordFields: some View {
     Section {
-      TextField("Usuário", text: $draft.username).textContentType(.username).accessibilityIdentifier("usernameField")
+      TextField("Usuário", text: $draft.username).textContentType(.username).accessibilityIdentifier(
+        "usernameField")
       SecureField("Senha", text: $draft.password).accessibilityIdentifier("passwordField")
       StrengthMeter(password: draft.password)
       Button("Gerar senha forte", systemImage: "wand.and.stars") { showGenerator = true }
       TextField("URL", text: $draft.url).keyboardType(.URL)
     }
-    Section("Notas") { TextField("Notas", text: $draft.notes, axis: .vertical).textInputAutocapitalization(.sentences) }
+    Section("Notas") {
+      TextField("Notas", text: $draft.notes, axis: .vertical).textInputAutocapitalization(.sentences)
+    }
   }
 
   @ViewBuilder private var authenticatorFields: some View {
@@ -62,7 +65,9 @@ struct ItemEditorView: View {
       TextField("Segredo base32 ou URI otpauth://", text: $draft.secretInput, axis: .vertical)
         .accessibilityIdentifier("secretField")
     } footer: {
-      Text("Cole a URI otpauth:// do QR code ou digite o segredo manualmente. Algoritmo, dígitos e período vêm da URI (padrão: SHA1, 6, 30 s).")
+      Text(
+        "Cole a URI otpauth:// do QR code ou digite o segredo manualmente. Algoritmo, dígitos e período vêm da URI (padrão: SHA1, 6, 30 s)."
+      )
     }
   }
 
@@ -74,7 +79,9 @@ struct ItemEditorView: View {
       TextField("Valor secreto", text: $draft.secretInput, axis: .vertical)
         .lineLimit(1...8).font(.system(.body, design: .monospaced)).accessibilityIdentifier("secretField")
     }
-    Section("Notas") { TextField("Notas", text: $draft.notes, axis: .vertical).textInputAutocapitalization(.sentences) }
+    Section("Notas") {
+      TextField("Notas", text: $draft.notes, axis: .vertical).textInputAutocapitalization(.sentences)
+    }
   }
 
   private func save() {

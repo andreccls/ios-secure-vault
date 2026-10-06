@@ -8,7 +8,9 @@ struct BackupDocument: FileDocument {
 
   init(data: Data) { self.data = data }
   init(configuration: ReadConfiguration) throws { data = configuration.file.regularFileContents ?? Data() }
-  func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { FileWrapper(regularFileWithContents: data) }
+  func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+    FileWrapper(regularFileWithContents: data)
+  }
 }
 
 struct SettingsView: View {
@@ -39,7 +41,8 @@ struct SettingsView: View {
           )
           .disabled(!session.biometricsAvailable && !session.biometricsEnabled)
           if !session.biometricsAvailable {
-            Text("Biometria indisponível neste aparelho/simulador.").font(.footnote).foregroundStyle(.secondary)
+            Text("Biometria indisponível neste aparelho/simulador.").font(.footnote).foregroundStyle(
+              .secondary)
           }
           Button("Alterar senha mestra") { showChangePassword = true }
           Button("Bloquear agora", systemImage: "lock.fill") { session.lock() }
@@ -51,7 +54,9 @@ struct SettingsView: View {
         } header: {
           Text("Backup")
         } footer: {
-          Text("O arquivo é cifrado com uma senha própria (PBKDF2 + AES-GCM). Guarde-a: sem ela o backup não abre.")
+          Text(
+            "O arquivo é cifrado com uma senha própria (PBKDF2 + AES-GCM). Guarde-a: sem ela o backup não abre."
+          )
         }
         if let message = session.errorMessage ?? info {
           Section { Text(message).accessibilityIdentifier("settingsMessage") }
@@ -71,16 +76,25 @@ struct SettingsView: View {
       } message: {
         Text("Mínimo de \(Vault.minimumPasswordLength) caracteres.")
       }
-      .alert("Senha do backup", isPresented: Binding(get: { importedData != nil }, set: { if !$0 { importedData = nil } })) {
+      .alert(
+        "Senha do backup",
+        isPresented: Binding(get: { importedData != nil }, set: { if !$0 { importedData = nil } })
+      ) {
         SecureField("Senha do backup", text: $backupPassword)
-        Button("Cancelar", role: .cancel) { backupPassword = ""; importedData = nil }
+        Button("Cancelar", role: .cancel) {
+          backupPassword = ""; importedData = nil
+        }
         Button("Importar") { runImport() }
       }
       .fileExporter(
         isPresented: Binding(get: { exportDocument != nil }, set: { if !$0 { exportDocument = nil } }),
         document: exportDocument, contentType: .json, defaultFilename: "secure-vault-backup"
       ) { result in
-        if case .failure = result { info = "Não foi possível salvar o arquivo." } else { info = "Backup exportado." }
+        if case .failure = result {
+          info = "Não foi possível salvar o arquivo."
+        } else {
+          info = "Backup exportado."
+        }
       }
       .fileImporter(isPresented: $showImporter, allowedContentTypes: [.json]) { result in
         guard let url = try? result.get(), url.startAccessingSecurityScopedResource() else { return }
@@ -108,7 +122,9 @@ struct SettingsView: View {
     importedData = nil
     Task {
       session.errorMessage = nil
-      if let count = await session.importBackup(data, password: password) { info = "\(count) itens importados." }
+      if let count = await session.importBackup(data, password: password) {
+        info = "\(count) itens importados."
+      }
     }
   }
 
@@ -151,7 +167,9 @@ struct ChangePasswordView: View {
         ToolbarItem(placement: .confirmationAction) {
           Button("Alterar") {
             Task {
-              if await session.changeMasterPassword(current: current, new: new, confirmation: confirmation) { dismiss() }
+              if await session.changeMasterPassword(current: current, new: new, confirmation: confirmation) {
+                dismiss()
+              }
             }
           }
           .disabled(current.isEmpty || new.isEmpty)

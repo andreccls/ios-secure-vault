@@ -25,7 +25,10 @@ struct ItemListView: View {
       List(visible) { item in
         NavigationLink(value: item.id) { ItemRow(item: item) }
           .swipeActions(edge: .leading) {
-            Button(item.isFavorite ? "Desfavoritar" : "Favoritar", systemImage: item.isFavorite ? "star.slash" : "star") {
+            Button(
+              item.isFavorite ? "Desfavoritar" : "Favoritar",
+              systemImage: item.isFavorite ? "star.slash" : "star"
+            ) {
               Task { await session.toggleFavorite(item) }
             }
             .tint(.yellow)
@@ -38,7 +41,9 @@ struct ItemListView: View {
         if visible.isEmpty {
           ContentUnavailableView(
             query.isEmpty ? "Nenhum item" : "Sem resultados", systemImage: kind.icon,
-            description: Text(query.isEmpty ? "Toque em + para adicionar \(kind.singular)." : "Nada encontrado para a busca."))
+            description: Text(
+              query.isEmpty ? "Toque em + para adicionar \(kind.singular)." : "Nada encontrado para a busca.")
+          )
         }
       }
       .navigationTitle(kind.title)
@@ -67,7 +72,8 @@ struct ItemListView: View {
       }
       .sheet(isPresented: $showGenerator) { GeneratorView() }
       .confirmationDialog(
-        "Excluir \"\(pendingDelete?.title ?? "")\"?", isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
+        "Excluir \"\(pendingDelete?.title ?? "")\"?",
+        isPresented: Binding(get: { pendingDelete != nil }, set: { if !$0 { pendingDelete = nil } }),
         titleVisibility: .visible
       ) {
         Button("Excluir", role: .destructive) {

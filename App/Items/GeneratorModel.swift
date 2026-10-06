@@ -20,7 +20,9 @@ final class GeneratorModel {
 
   /// A class may be turned off only if another one stays on.
   func canDisable(_ keyPath: KeyPath<PasswordGeneratorOptions, Bool>) -> Bool {
-    let enabled = [\PasswordGeneratorOptions.lowercase, \.uppercase, \.digits, \.symbols].filter { options[keyPath: $0] }
+    let enabled = [\PasswordGeneratorOptions.lowercase, \.uppercase, \.digits, \.symbols].filter {
+      options[keyPath: $0]
+    }
     return !(enabled.count == 1 && options[keyPath: keyPath])
   }
 }

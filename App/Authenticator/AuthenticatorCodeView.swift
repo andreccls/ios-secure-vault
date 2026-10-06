@@ -49,7 +49,9 @@ struct Countdown: View {
     ZStack {
       Circle().stroke(Color.secondary.opacity(0.25), lineWidth: 3)
       Circle().trim(from: 0, to: Double(remaining) / Double(period))
-        .stroke(remaining <= 5 ? Color.red : Color.accentColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+        .stroke(
+          remaining <= 5 ? Color.red : Color.accentColor, style: StrokeStyle(lineWidth: 3, lineCap: .round)
+        )
         .rotationEffect(.degrees(-90))
       Text("\(remaining)").font(.caption2.monospacedDigit())
     }

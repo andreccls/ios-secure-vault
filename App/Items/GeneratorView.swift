@@ -28,7 +28,8 @@ struct GeneratorView: View {
           classToggle("Números (0–9)", \.digits)
           classToggle("Símbolos (!@#…)", \.symbols)
           Toggle("Evitar caracteres ambíguos (I l 1 O 0)", isOn: $model.options.avoidAmbiguous)
-          Text("Entropia estimada: ~\(Int(model.entropyBits)) bits").font(.footnote).foregroundStyle(.secondary)
+          Text("Entropia estimada: ~\(Int(model.entropyBits)) bits").font(.footnote).foregroundStyle(
+            .secondary)
         }
       }
       .navigationTitle("Gerador de senha")
@@ -47,8 +48,13 @@ struct GeneratorView: View {
     }
   }
 
-  private func classToggle(_ title: String, _ keyPath: WritableKeyPath<PasswordGeneratorOptions, Bool>) -> some View {
-    Toggle(title, isOn: Binding(get: { model.options[keyPath: keyPath] }, set: { model.options[keyPath: keyPath] = $0 }))
-      .disabled(!model.canDisable(keyPath))
+  private func classToggle(_ title: String, _ keyPath: WritableKeyPath<PasswordGeneratorOptions, Bool>)
+    -> some View
+  {
+    Toggle(
+      title,
+      isOn: Binding(get: { model.options[keyPath: keyPath] }, set: { model.options[keyPath: keyPath] = $0 })
+    )
+    .disabled(!model.canDisable(keyPath))
   }
 }

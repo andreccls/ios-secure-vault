@@ -14,7 +14,8 @@ struct ItemDetailView: View {
         List {
           content(of: item)
           Section {
-            LabeledContent("Atualizado", value: item.updatedAt.formatted(date: .abbreviated, time: .shortened))
+            LabeledContent(
+              "Atualizado", value: item.updatedAt.formatted(date: .abbreviated, time: .shortened))
           }
         }
         .navigationTitle(item.title)
@@ -32,10 +33,14 @@ struct ItemDetailView: View {
               .accessibilityIdentifier("deleteButton")
           }
         }
-        .sheet(item: Binding(get: { editing.map { DraftBox(draft: $0) } }, set: { if $0 == nil { editing = nil } })) { box in
+        .sheet(
+          item: Binding(get: { editing.map { DraftBox(draft: $0) } }, set: { if $0 == nil { editing = nil } })
+        ) { box in
           ItemEditorView(draft: box.draft, existing: item)
         }
-        .confirmationDialog("Excluir \"\(item.title)\"?", isPresented: $confirmDelete, titleVisibility: .visible) {
+        .confirmationDialog(
+          "Excluir \"\(item.title)\"?", isPresented: $confirmDelete, titleVisibility: .visible
+        ) {
           Button("Excluir", role: .destructive) {
             Task {
               await session.delete(id: item.id)
@@ -68,7 +73,9 @@ struct ItemDetailView: View {
         FieldRow(label: "Emissor", value: content.issuer)
         FieldRow(label: "Conta", value: content.account)
         FieldRow(label: "Segredo (base32)", value: content.secret, isSecret: true)
-        LabeledContent("Algoritmo", value: "\(content.algorithm.rawValue) · \(content.digits) dígitos · \(content.period) s")
+        LabeledContent(
+          "Algoritmo",
+          value: "\(content.algorithm.rawValue) · \(content.digits) dígitos · \(content.period) s")
       }
     case .authKey(let content):
       Section {
