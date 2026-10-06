@@ -29,7 +29,7 @@ struct RootView: View {
     }
     .animation(.default, value: clipboard.notice)
     // Any touch counts as activity for the inactivity timer.
-    .simultaneousGesture(DragGesture(minimumDistance: 0).onChanged { _ in session.recordActivity() })
+    .background(TouchActivity { session.recordActivity() })
     .onChange(of: scenePhase) { _, phase in
       if phase == .background { session.handleBackground() }
     }

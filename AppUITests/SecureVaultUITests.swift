@@ -82,11 +82,17 @@ final class SecureVaultUITests: XCTestCase {
     addPassword(title: "To Delete")
     app.staticTexts["To Delete"].tap()
     app.buttons["deleteButton"].tap()
-    XCTAssertTrue(app.buttons["Cancelar"].waitForExistence(timeout: 5))
-    app.buttons["Cancelar"].tap()
-    XCTAssertTrue(app.navigationBars["To Delete"].exists, "cancel keeps the item")
+    // The iOS 26 confirmation dialog is a popover: only the destructive action is a button; tapping outside cancels.
+    let confirm = app.buttons.matching(
+      NSPredicate(format: "label == 'Excluir' AND identifier != 'deleteButton'")
+    ).firstMatch
+    XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+    app.coordinate(withNormalizedOffset: CGVector(dx: 0.05, dy: 0.6)).tap()
+    XCTAssertTrue(app.buttons["deleteButton"].waitForExistence(timeout: 5), "dismissing keeps the item")
+    XCTAssertFalse(confirm.exists)
     app.buttons["deleteButton"].tap()
-    app.buttons["Excluir"].firstMatch.tap()
+    XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+    confirm.tap()
     XCTAssertTrue(app.buttons["addButton"].waitForExistence(timeout: 5))
     XCTAssertFalse(app.staticTexts["To Delete"].exists)
   }
@@ -105,8 +111,10 @@ final class SecureVaultUITests: XCTestCase {
     createVault()
     addPassword(title: "Masked")
     app.staticTexts["Masked"].tap()
-    XCTAssertFalse(app.staticTexts["Not-A-Real-Password-1!"].exists)
+    let value = app.staticTexts["value-Senha"]
+    XCTAssertTrue(value.waitForExistence(timeout: 5))
+    XCTAssertEqual(value.label, "Senha, oculto")
     app.buttons["Revelar Senha"].tap()
-    XCTAssertTrue(app.staticTexts["Not-A-Real-Password-1!"].waitForExistence(timeout: 5))
+    XCTAssertEqual(value.label, "Senha, Not-A-Real-Password-1!")
   }
 }
