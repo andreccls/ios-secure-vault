@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: |
+          sudo xcode-select -s /Applications/Xcode_26.app 2>/dev/null || true
+          xcodebuild -version && swift --version
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Lint (swift-format, strict)
+        run: make lint
+      - name: VaultCore tests (swift test, macOS)
+        run: make test-package
+      - name: Generate project and build for the simulator
+        run: make build UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print(next(x['udid'] for k,v in d.items() if 'iOS' in k for x in v if x['name'].startswith('iPhone')))")
+      - name: App unit tests (simulator)
+        run: make test-unit UDID=$(xcrun simctl list devices available -j | python3 -c "import json,sys; d=json.load(sys.stdin)['devices']; print(next(x['udid'] for k,v in d.items() if 'iOS' in k for x in v if x['name'].startswith('iPhone')))")
+      # UI tests are NOT run here: they depend on simulator boot/keyboard timing, which is flaky on hosted runners.
+      # Run `make test-ui` locally (docs/TESTING.md lists their status).
