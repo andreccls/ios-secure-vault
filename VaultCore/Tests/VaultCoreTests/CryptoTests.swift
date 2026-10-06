@@ -35,7 +35,8 @@ struct KeyDerivationTests {
     #expect(base != hex(try PBKDF2.deriveKey(password: "pw-12346", salt: salt, iterations: 1000)))
     #expect(
       base
-        != hex(try PBKDF2.deriveKey(password: "pw-12345", salt: Data(repeating: 8, count: 16), iterations: 1000)))
+        != hex(
+          try PBKDF2.deriveKey(password: "pw-12345", salt: Data(repeating: 8, count: 16), iterations: 1000)))
     #expect(base != hex(try PBKDF2.deriveKey(password: "pw-12345", salt: salt, iterations: 1001)))
   }
 
