@@ -106,7 +106,7 @@ Medidos em 2026-10-06 (detalhes em [docs/TESTING.md](docs/TESTING.md)):
 | Cobertura do app (unit + UI) | 76,1% (1 785/2 346): `SessionModel` 99%, views 56–93% |
 | Build / lint | Swift 6 strict concurrency, avisos como erro, **0 avisos**; `swift-format --strict` limpo |
 | Execução no simulador | sem crash; telas verificadas em claro/escuro e com **Dynamic Type XXL** |
-| Clone limpo | __CLONE__ |
+| Clone limpo | build + 84 testes do pacote + 22 do app + 6 UI + lint **passam num clone novo** (sem `build/`, `DerivedData` novo, 0 avisos de compilação) |
 
 Os UI tests **não rodam no CI** (boot/teclado do simulador instáveis em runner hospedado): `make test-ui`.
 
