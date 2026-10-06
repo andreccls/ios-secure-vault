@@ -48,7 +48,7 @@ run: build
 
 # Real screenshots (light + dark) into docs/images. Uses debug-only launch arguments with fictional data.
 screenshots: project
-	SCREENSHOT_DIR=$(CURDIR)/docs/images/raw ./scripts/screenshots.sh
+	SCREENSHOT_DIR=$(CURDIR)/build/shots ./scripts/screenshots.sh
 
 clean:
 	rm -rf build VaultCore/.build SecureVault.xcodeproj

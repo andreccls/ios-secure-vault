@@ -59,7 +59,10 @@ final class ScreenshotTests: XCTestCase {
     let app = XCUIApplication()
     app.launchArguments = ["-UITestSeed", "-UITestShield"]
     app.launch()
-    XCTAssertTrue(app.otherElements["privacyShield"].waitForExistence(timeout: 10))
+    XCTAssertTrue(
+      app.descendants(matching: .any).matching(
+        NSPredicate(format: "identifier == 'privacyShield' OR label CONTAINS 'Conteúdo oculto'")
+      ).firstMatch.waitForExistence(timeout: 10))
     try XCUIScreen.main.screenshot().pngRepresentation.write(
       to: URL(fileURLWithPath: "\(directory)/09-privacy-\(suffix).png"))
   }
