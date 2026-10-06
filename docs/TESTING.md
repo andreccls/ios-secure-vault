@@ -17,7 +17,7 @@ make lint          # swift-format --strict
 |---|---|---|
 | Core (Swift Testing) | `VaultCore/Tests` | **84 testes em 15 suítes, verdes** |
 | View-models (Swift Testing, simulador) | `AppTests` | **22 testes em 4 suítes, verdes** |
-| UI (XCUITest, simulador) | `AppUITests` | __UI_STATUS__ |
+| UI (XCUITest, simulador) | `AppUITests` | **6 testes, verdes** (simulador iPhone 17 Pro, ~2 min no total) |
 
 ### O que o core cobre (TDD em crypto/TOTP/KDF)
 - PBKDF2-HMAC-SHA256: vetores conhecidos (c = 1, 2, 4096), determinismo, sensibilidade a salt/senha/iterações, normalização Unicode, parâmetros inválidos.
@@ -31,11 +31,35 @@ make lint          # swift-format --strict
 `SessionModel` (fluxos de desbloqueio, backoff, lock por background e por inatividade com relógio injetado, biometria via fake, CRUD, troca de senha, backup), `ItemDraft`, `GeneratorModel`, `ClipboardService` (expiração e `localOnly` via spy).
 
 ### UI tests (simulador)
-__UI_DETAIL__
+| Teste | Verifica |
+|---|---|
+| `testCreateVaultAndAddPassword` | criar cofre (senha + confirmação) e adicionar uma senha |
+| `testAddAuthenticatorShowsLiveCode` | adicionar autenticador por segredo base32; código `NNN NNN` visível |
+| `testLockAndUnlock` | bloquear em Ajustes, senha errada mostra erro, senha certa desbloqueia |
+| `testDeleteRequiresConfirmation` | excluir abre confirmação; dispensar mantém o item; confirmar remove |
+| `testGoingToBackgroundLocksTheVault` | **auto-lock real**: botão Home e voltar ao app pede a senha mestra |
+| `testSecretsAreMaskedUntilRevealed` | valor "oculto" até tocar em revelar |
+
+Rodam contra uma build DEBUG com `-UITestReset` (cofre temporário novo e KDF de 1 000 iterações; esse gancho não existe em Release). **Fora do CI** (boot/teclado do simulador são instáveis em runner hospedado). Dois achados reais durante a depuração: (1) um `simultaneousGesture` na raiz engolia toques em botões da barra (corrigido com um reconhecedor passivo, `TouchActivity`); (2) no iOS 26 o `confirmationDialog` no iPhone é um popover só com a ação destrutiva (cancelar = tocar fora). Os testes dependem do tamanho de texto padrão do simulador: com Dynamic Type "accessibility XXL" ativo, o botão "Bloquear agora" fica fora da tela e `testLockAndUnlock` falha; `scripts/screenshots.sh` restaura o tamanho no fim.
 
 ## Cobertura
 
-__COVERAGE__
+**VaultCore** (`swift test --enable-code-coverage`, linhas):
+
+| Arquivo | Linhas | Cobertura |
+|---|---|---|
+| Crypto/* (AES-GCM, PBKDF2, Zeroize) | 65 | **100%** |
+| TOTP/TOTP.swift, Base32.swift | 46 | **100%** |
+| TOTP/AuthenticatorContent.swift | 61 | 95,1% (3 linhas: ramos defensivos) |
+| Vault/* (Vault, Backup, FileStorage, Attempt, Storage) | 220 | **100%** |
+| Domain, Passwords, AutoLock | 158 | **100%** |
+| Security/KeychainBiometricKeyStore.swift | 60 | 0% (excluído, ver abaixo) |
+| **Total medido** | 610 (63 não cobertas) | 89,7% |
+| **Total sem o Keychain** | 550 (3 não cobertas) | **99,5%** |
+
+Meta ≥ 90% atingida **excluindo** o único arquivo que exige hardware; incluindo-o o total é 89,7% (abaixo da meta, sem maquiar). Crypto e TOTP puros: 100%; `AuthenticatorContent` (parser/validação) 95,1%.
+
+**App** (`xccov`, testes unitários + UI juntos, linhas): **76,1%** (1 785/2 346). Por arquivo: `SessionModel` 99,0%, `ItemDraft` 100%, `GeneratorModel` 95,0%, `UnlockView` 93,4%, `ItemListView` 91,6%, `RootView` 91,9%, `ItemDetailView` 85,4%, `ItemEditorView` 80,4%, `SettingsView` 56,9% (backup/importação/alterar senha não têm UI test), `GeneratorView` 0% (só vista nos screenshots), `DemoData` 4% (DEBUG, usado só pelos screenshots).
 
 ### Excluído da medição, e por quê
 - `KeychainBiometricKeyStore` (58 linhas): precisa de biometria/Secure Enclave reais; o simulador não os tem. A lógica de fallback ao redor é testada com fake em `SessionModel`.
